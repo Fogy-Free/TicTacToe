@@ -1,0 +1,180 @@
+<html lang="en">
+<head>
+  <style>
+    body{
+      background-color: aquamarine;
+      text-shadow: 0 0 3px black;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+      top: 0;
+    }
+    td {
+      width: 120px;
+      height: 120px;
+      border: 5px solid gold;
+      text-align: center;
+      font-size: 56px;
+      font-weight: bold;
+    }
+    #message {
+      font-size: 35px;
+      font-style: italic;
+      color: gold;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: 40px;
+      font-style: italic;
+      color: gold;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+  <p id="message">Click on a cell to start the game.</p>
+  <table>
+    <tr>
+      <td id="cell_0"></td>
+      <td id="cell_1"></td>
+      <td id="cell_2"></td>
+    </tr>
+    <tr>
+      <td id="cell_3"></td>
+      <td id="cell_4"></td>
+      <td id="cell_5"></td>
+    </tr>
+    <tr>
+      <td id="cell_6"></td>
+      <td id="cell_7"></td>
+      <td id="cell_8"></td>
+    </tr>
+  </table>
+  <script>
+    // Define the symbols for the players
+    var playerSymbol = "X";
+    var computerSymbol = "O";
+    // Define the board as an array of cells
+    var board = [];
+    for (var i = 0; i < 9; i++) {
+      board[i] = document.getElementById("cell_" + i);
+    }
+
+    // Define the winning combinations as an array of arrays
+    var wins = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    // Define a variable to keep track of the turn
+    var turn;
+
+    // Define a function to check if the board is full
+    function isBoardFull() {
+      for (var i = 0; i < board.length; i++) {
+        if (board[i].innerHTML == "") {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Define a function to check if a player has won
+    function isWinner(symbol) {
+      for (var i = 0; i < wins.length; i++) {
+        var win = true;
+        for (var j = 0; j < wins[i].length; j++) {
+          var index = wins[i][j];
+          if (board[index].innerHTML != symbol) {
+            win = false;
+            break;
+          }
+        }
+        if (win) {
+          return true;
+        }
+      }
+      return false;
+    }
+    // Define a function to make a random move for the computer
+    function makeRandomMove() {
+      var availableCells = [];
+      for (var i = 0; i < board.length; i++) {
+        if (board[i].innerHTML == "") {
+          availableCells.push(i);
+        }
+      }
+      var randomIndex = Math.floor(Math.random() * availableCells.length);
+      var cellIndex = availableCells[randomIndex];
+      board[cellIndex].innerHTML = computerSymbol;
+    }
+    // Define a function to update the message and check for game over
+    function updateMessage() {
+      if (isWinner(playerSymbol)) {
+        document.getElementById("message").innerHTML = "You win!";
+        gameOver();
+      } else if (isWinner(computerSymbol)) {
+        document.getElementById("message").innerHTML = "You lose!";
+        gameOver();
+      } else if (isBoardFull()) {
+        document.getElementById("message").innerHTML = "It's a tie!";
+        gameOver();
+      } else {
+        document.getElementById("message").innerHTML = "It's your turn.";
+      }
+    }
+    // Define a function to disable the board and end the game
+    function gameOver() {
+      for (var i = 0; i < board.length; i++) {
+        board[i].removeEventListener("click", handleClick);
+      }
+    }
+    // Define a function to handle the click event on a cell
+    function handleClick(event) {
+     // Check if the cell is empty
+     if (event.target.innerHTML == "") {
+       // Make the player's move
+       event.target.innerHTML = playerSymbol;
+       // Update the message and check for game over
+       updateMessage();
+       // If the game is not over, make the computer's move
+       if (!isBoardFull() && !isWinner(playerSymbol) && !isWinner(computerSymbol)) {
+         // Make a random move for the computer
+         makeRandomMove();
+         // Update the message and check for game over
+         updateMessage();
+       }
+     }
+   }
+   // Define a function to start the game
+   function startGame() {
+     // Flip a coin to decide who goes first
+     var coin = Math.random() < 0.5 ? "heads" : "tails";
+     // If heads, the player goes first
+     if (coin == "heads") {
+       turn = "player";
+       document.getElementById("message").innerHTML = "You go first.";
+     } else { // If tails, the computer goes first
+       turn = "computer";
+       document.getElementById("message").innerHTML = "The computer goes first.";
+       makeRandomMove();
+       updateMessage();
+     }
+     // Add event listeners to the cells
+     for (var i = 0; i < board.length; i++) {
+       board[i].addEventListener("click", handleClick);
+     }
+   }
+   // Start the game when the page loads
+   window.onload = startGame;
+ </script>
+</body>
+</html>
